@@ -54,9 +54,17 @@ class CustomNavigationBar(Component):
         return ''
 
     def get_navigation_items(self, req):
-        return [
-            ('mainnav', 'custom_reports', Markup('<a href="%s">Reports</a>' % req.href.wiki('Reports'))),
-        ]
+        nav_items = []
+        # Trac disables the new ticket button for logged out users.
+        # Recreate it. /newticket blares a warning to sign in anyway.
+        if 'TICKET_CREATE' not in req.perms:
+            nav_items.append(
+                ('mainnav', 'new_ticket', tag.a('New Ticket', href=req.href.newticket()))
+            )
+        nav_items.append(
+            ('mainnav', 'custom_reports', Markup('<a href="%s">Reports</a>' % req.href.wiki('Reports')))
+        )
+        return nav_items
 
 
 try:
